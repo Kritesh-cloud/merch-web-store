@@ -1,4 +1,4 @@
-package com.example.MerchWebStore;
+package cm.ex.merch;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
