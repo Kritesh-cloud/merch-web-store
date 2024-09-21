@@ -12,7 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "email_list")
+@Table(name = "news_email_list")
 public class EmailList {
 
     @Id

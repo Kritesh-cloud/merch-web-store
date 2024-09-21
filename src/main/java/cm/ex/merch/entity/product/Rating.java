@@ -14,30 +14,23 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "prod_review")
-public class Review {
+@Table(name = "prod_rating")
+public class Rating {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 
-    @NotBlank(message="please enter review data")
     @Column(name = "review")
-    private String review;
+    private int rating;
 
-    @NotBlank(message="please enter review data")
-    @Column(name = "priority", columnDefinition = "INT DEFAULT 4")//1-5, 1 highest, 5 lowest, 4 default
-    private int priority;
-
-    @Column(name = "hidden", columnDefinition = "BOOLEAN DEFAULT false")
-    private boolean hidden;
-
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
+
 }
