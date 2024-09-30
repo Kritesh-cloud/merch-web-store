@@ -10,5 +10,5 @@ public class MerchWebStoreApplication {
 		SpringApplication.run(MerchWebStoreApplication.class, args);
 		System.out.println("Merch Web Store Application");
 	}
-
+// drop database merch; create database merch; use merch;
 }

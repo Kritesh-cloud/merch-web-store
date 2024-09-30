@@ -23,4 +23,9 @@ public class Authority {
     @NotBlank(message="please enter authority data")
     @Column(name = "authority")
     private String authority;
+
+    @NotBlank(message="please enter authority data")
+    @Column(name = "level")
+    private String level;
+
 }

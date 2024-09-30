@@ -1,10 +1,13 @@
 package cm.ex.merch.entity;
-;
+
+import cm.ex.merch.entity.user.Authority;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -31,4 +34,9 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_authority_list",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id"))
+    private Set<Authority> authority;
 }

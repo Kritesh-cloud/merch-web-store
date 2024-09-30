@@ -14,23 +14,25 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user_ban")
-public class Ban {
-
+@Table(name = "user_notification")
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private UUID id;
 
+    @NotBlank(message="please enter notification data")
+    @Column(name = "message")
+    private String message;
+
     @Column(name = "datetime")
     private LocalDateTime datetime;
 
-    @NotBlank(message="please enter ban data")
-    @Column(name = "reason")
-    private String reason;
+    @JoinColumn(name = "email")
+    private boolean email;
 
-    @OneToOne(optional = true)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
-
+    @ManyToOne
+    @JoinColumn(name = "moderator_id")
+    @NotBlank(message="please enter notification data")
+    private User moderator;
 }

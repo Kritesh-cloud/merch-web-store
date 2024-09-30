@@ -34,8 +34,7 @@ public class Order {
     @Column(name = "total_amount")
     private int totalAmount;
 
-    @NotBlank(message="please enter order data")
-    @Column(name = "order_date")
+    @Column(name = "order_date", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime orderDate;
 
     @NotBlank(message="please enter order data")
@@ -51,18 +50,17 @@ public class Order {
     private int finalAmount; //when discount or couple are added and shipping fee
 
     @NotBlank(message="please enter order data")
-    @Column(name = "order_status")
+    @Column(name = "order_status", columnDefinition = "VARCHAR(255) DEFAULT 'processing'")
     private String orderStatus; //processing,
 
     @NotBlank(message="please enter order data")
-    @Column(name = "payment_status")
+    @Column(name = "payment_status", columnDefinition = "VARCHAR(255) DEFAULT 'pending'")
     private String paymentStatus; // paid, pending, failed, cash on delivery
 
     @NotBlank(message="please enter order data")
-    @Column(name = "shipment_status")
+    @Column(name = "shipment_status", columnDefinition = "VARCHAR(255) DEFAULT 'not shipped'")
     private String shipmentStatus; //not shipped, shipping, shipped, out of delivery, failed delivery
 
-    @NotBlank(message="please enter order data")
     @Column(name = "delivery_date")
     private LocalDateTime deliveryDate;
 
