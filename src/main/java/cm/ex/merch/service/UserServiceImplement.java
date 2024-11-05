@@ -1,22 +1,38 @@
 package cm.ex.merch.service;
 
+import cm.ex.merch.dto.request.SignInUserDto;
+import cm.ex.merch.dto.request.SignUpUserDto;
 import cm.ex.merch.entity.User;
 import cm.ex.merch.entity.user.Authority;
 import cm.ex.merch.entity.user.Ban;
 import cm.ex.merch.repository.BanRepository;
 import cm.ex.merch.repository.UserRepository;
+import cm.ex.merch.response.token.LoginResponse;
 import cm.ex.merch.response.user.UserResponse;
+import cm.ex.merch.security.authentication.UserAuthentication;
 import cm.ex.merch.service.interfaces.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImplement implements UserService {
+
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Autowired
     private UserRepository userRepository;
@@ -25,19 +41,41 @@ public class UserServiceImplement implements UserService {
     private BanRepository banRepository;
 
     @Override
-    public UserResponse addUser(User user) {
+    public UserResponse addUser(SignUpUserDto signUpUserDto) {
+
         UserResponse userResponse = new UserResponse();
         userResponse.setType("Create");
         userResponse.setStatus(true);
         userResponse.setMessage("Account created successfully");
-        User userEmail = userRepository.findByEmail(user.getEmail());
+        User userEmail = userRepository.findByEmail(signUpUserDto.getEmail());
         if(userEmail != null){
             userResponse.setStatus(false);
             userResponse.setMessage("User with this email already exists");
             return userResponse;
         }
+        User user = modelMapper.map(signUpUserDto, User.class);
         userRepository.save(user);
         return userResponse;
+    }
+
+    @Override
+    public LoginResponse getUserToken(SignInUserDto signInUserDto){
+
+        UserAuthentication userAuth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
+
+        if(userAuth == null) {
+            throw new NoSuchElementException("user not found, cannot make token");
+        }
+
+        String jwtToken = jwtService.generateToken(userAuth);
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setStatus(true);
+        loginResponse.setMessage("user token");
+        loginResponse.setToken(jwtToken);
+        List<String> userRoles = userAuth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        return loginResponse;
     }
 
     @Override
