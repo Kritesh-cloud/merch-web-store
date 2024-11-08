@@ -9,7 +9,7 @@ import cm.ex.merch.repository.BanRepository;
 import cm.ex.merch.repository.UserRepository;
 import cm.ex.merch.response.token.LoginResponse;
 import cm.ex.merch.response.user.UserResponse;
-import cm.ex.merch.security.authentication.UserAuthentication;
+import cm.ex.merch.security.authentication.UserAuth;
 import cm.ex.merch.service.interfaces.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class UserServiceImplement implements UserService {
     @Override
     public LoginResponse getUserToken(SignInUserDto signInUserDto){
 
-        UserAuthentication userAuth = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
 
         if(userAuth == null) {
             throw new NoSuchElementException("user not found, cannot make token");

@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserAuthentication implements Authentication {
+public class UserAuth implements Authentication {
 
     private boolean authenticated;
     private String email;

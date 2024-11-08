@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
-import cm.ex.merch.security.authentication.UserAuthentication;
+import cm.ex.merch.security.authentication.UserAuth;
 
 @Service
 public class JwtService {
@@ -38,11 +38,11 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserAuthentication userAuthentication) {
+    public String generateToken(UserAuth userAuthentication) {
         return generateToken(new HashMap<>(), userAuthentication);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserAuthentication userAuthentication) {
+    public String generateToken(Map<String, Object> extraClaims, UserAuth userAuthentication) {
         return buildToken(extraClaims, userAuthentication, jwtExpiration);
     }
 
@@ -50,7 +50,7 @@ public class JwtService {
         return jwtExpiration;
     }
 
-    private String buildToken(Map<String, Object> extraClaims, UserAuthentication userAuthentication, long expiration) {
+    private String buildToken(Map<String, Object> extraClaims, UserAuth userAuthentication, long expiration) {
         List<String> userRoles = userAuthentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
@@ -65,7 +65,7 @@ public class JwtService {
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserAuthentication userAuthentication) {
+    public boolean isTokenValid(String token, UserAuth userAuthentication) {
         final String email = extractEmail(token);
         return (email.equals(userAuthentication.getEmail())) && !isTokenExpired(token);
     }

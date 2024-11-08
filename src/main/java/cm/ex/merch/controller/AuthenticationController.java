@@ -12,11 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 
 @RequestMapping("")
@@ -56,13 +52,13 @@ public class AuthenticationController {
         return "Merch Data Controller";
     }
 
-    @GetMapping("/signUp")
+    @PostMapping("/signUp")
     public ResponseEntity<UserResponse> signUp(@RequestBody @Valid SignUpUserDto signUpUserDto) {
         logger.info("[INFO] Authentication.controller - register. SignUpUserDto : {}", signUpUserDto.toString());
         return ResponseEntity.ok(userService.addUser(signUpUserDto));
     }
 
-    @GetMapping("/signIn")
+    @PostMapping("/signIn")
     public ResponseEntity<LoginResponse> signIn(@RequestBody @Valid SignInUserDto signInUserDto) {
         logger.info("[INFO] Authentication.controller - register. SignInUserDto : {}", signInUserDto.toString());
         return ResponseEntity.ok(userService.getUserToken(signInUserDto));
