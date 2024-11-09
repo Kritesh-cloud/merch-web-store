@@ -22,19 +22,6 @@ public class AppConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-//    AuthenticationManagerBuilder authenticationManagerBuilder(
-//            AuthenticationProvider authenticationProvider,
-//            UserAuthentication userAuthentication
-//        ){
-//        Authentication authentication = (Authentication) userAuthentication;
-//        return authenticationProvider.authenticate(authentication).build();
-//    }
-//    @Bean
-//    @Override
-//    public AuthenticationManager authenticationManagerBean() throws Exception {
-//        return super.authenticationManagerBean();
-//    }
-
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

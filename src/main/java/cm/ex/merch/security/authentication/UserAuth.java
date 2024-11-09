@@ -18,7 +18,7 @@ public class UserAuth implements Authentication {
     private String email;
     private String password;
     private String token;
-    private String name;
+    private String fullName;
     private List<GrantedAuthority> authority;
 
     @Override
@@ -53,6 +53,6 @@ public class UserAuth implements Authentication {
 
     @Override
     public String getName() {
-        return name;
+        return fullName;
     }
 }

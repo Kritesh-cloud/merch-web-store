@@ -29,26 +29,11 @@ public class AuthenticationController {
 
     @GetMapping("/test")
     public String test(){
-
-        logger.trace("A TRACE Message"); // doesn't work
-        logger.debug("A DEBUG Message"); // doesn't work
-        logger.info("An INFO Message");
-        logger.warn("A WARN Message");
-        logger.error("An ERROR Message");
-        logger.info("secret: {}",secretKey);
-
         return "Merch Test Controller";
     }
 
     @GetMapping("/data")
     public String data(){
-
-        logger.trace("A TRACE Message"); // doesn't work
-        logger.debug("A DEBUG Message"); // doesn't work
-        logger.info("An INFO Message");
-        logger.warn("A WARN Message");
-        logger.error("An ERROR Message");
-
         return "Merch Data Controller";
     }
 
@@ -60,8 +45,11 @@ public class AuthenticationController {
 
     @PostMapping("/signIn")
     public ResponseEntity<LoginResponse> signIn(@RequestBody @Valid SignInUserDto signInUserDto) {
-        logger.info("[INFO] Authentication.controller - register. SignInUserDto : {}", signInUserDto.toString());
-        return ResponseEntity.ok(userService.getUserToken(signInUserDto));
+
+        logger.info("[[INFO]] Authentication.controller - register. SignInUserDto : {}", signInUserDto.toString());
+        LoginResponse loginResponse = userService.getUserToken(signInUserDto);
+        logger.info("[[INFO]] Authentication.controller - register. loginResponse : {}",loginResponse.toString());
+        return ResponseEntity.ok(loginResponse);
     }
 
     @GetMapping("/me")

@@ -15,7 +15,7 @@ public class SignUpUserDto {
     private String email;
 
     @NotBlank(message = "input field cannot be blank")
-    private String name;
+    private String fullName;
 
     @NotBlank(message = "input field cannot be blank")
     private String password;

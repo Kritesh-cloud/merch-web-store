@@ -1,10 +1,12 @@
 package cm.ex.merch.service;
 
+import cm.ex.merch.controller.AuthenticationController;
 import cm.ex.merch.dto.request.SignInUserDto;
 import cm.ex.merch.dto.request.SignUpUserDto;
 import cm.ex.merch.entity.User;
 import cm.ex.merch.entity.user.Authority;
 import cm.ex.merch.entity.user.Ban;
+import cm.ex.merch.repository.AuthorityRepository;
 import cm.ex.merch.repository.BanRepository;
 import cm.ex.merch.repository.UserRepository;
 import cm.ex.merch.response.token.LoginResponse;
@@ -12,20 +14,24 @@ import cm.ex.merch.response.user.UserResponse;
 import cm.ex.merch.security.authentication.UserAuth;
 import cm.ex.merch.service.interfaces.UserService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImplement implements UserService {
+public class UserServiceImplement implements UserService, UserDetailsService {
 
 
     @Autowired
@@ -40,6 +46,14 @@ public class UserServiceImplement implements UserService {
     @Autowired
     private BanRepository banRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AuthorityRepository authorityRepository;
+
+    Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+
     @Override
     public UserResponse addUser(SignUpUserDto signUpUserDto) {
 
@@ -53,28 +67,46 @@ public class UserServiceImplement implements UserService {
             userResponse.setMessage("User with this email already exists");
             return userResponse;
         }
+
+        Set<Authority> authorityList = new HashSet<>();
+        Authority userAuthority = authorityRepository.findByAuthority("user");
+        authorityList.add(userAuthority);
+
         User user = modelMapper.map(signUpUserDto, User.class);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setAuthority(authorityList);
+
+        logger.info("[Info] UserServiceImplement, SignUpUserDto :{}",signUpUserDto.toString());
+        logger.info("[Info] UserServiceImplement, User :{}",user.toString());
+
         userRepository.save(user);
         return userResponse;
     }
 
     @Override
     public LoginResponse getUserToken(SignInUserDto signInUserDto){
-
-        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
-
-        if(userAuth == null) {
-            throw new NoSuchElementException("user not found, cannot make token");
+        LoginResponse loginResponse = new LoginResponse(false,null,null);
+        User user = userRepository.findByEmail(signInUserDto.getEmail());
+        if(user == null) {
+            loginResponse.setMessage("user not found, cannot make token");
+            return loginResponse;
+        }
+        if(!passwordEncoder.matches(signInUserDto.getPassword(),user.getPassword())){
+            logger.info("User password doesn't matches "+signInUserDto.getPassword()+", "+user.getPassword());
+            loginResponse.setMessage("Email or password doesn't match");
+            return loginResponse;
         }
 
-        String jwtToken = jwtService.generateToken(userAuth);
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setStatus(true);
-        loginResponse.setMessage("user token");
-        loginResponse.setToken(jwtToken);
-        List<String> userRoles = userAuth.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+            logger.info("User password matches "+signInUserDto.getPassword()+", "+user.getPassword());
+            UserAuth userAuth = new UserAuth(true,user.getEmail(),user.getPassword(),null,user.getPassword(),null);
+            userAuth.setAuthority(convertToGrantedAuthorities(user.getAuthority()));
+            String jwtToken = jwtService.generateToken(userAuth);
+
+            loginResponse.setStatus(true);
+            loginResponse.setMessage("user token");
+            loginResponse.setToken(jwtToken);
+
+
         return loginResponse;
     }
 
@@ -176,4 +208,22 @@ public class UserServiceImplement implements UserService {
         return userResponse;
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if(user == null){
+            throw new UsernameNotFoundException("User not found");
+        }
+        return org.springframework.security.core.userdetails.User.withUsername(user.getEmail())
+                .password(user.getPassword())
+                .username(user.getEmail())
+                .authorities(convertToGrantedAuthorities(user.getAuthority()))
+                .build();
+    }
+
+    private List<GrantedAuthority> convertToGrantedAuthorities(Set<Authority> authorities) {
+        return authorities.stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+                .collect(Collectors.toList());
+    }
 }
