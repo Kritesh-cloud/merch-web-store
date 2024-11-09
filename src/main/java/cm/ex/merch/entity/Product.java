@@ -1,5 +1,6 @@
 package cm.ex.merch.entity;
 
+import cm.ex.merch.entity.image.Image;
 import cm.ex.merch.entity.product.Category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -46,13 +48,16 @@ public class Product {
     @Column(name = "quantity")
     private int quantity;
 
-//    @NotBlank(message="please enter product data")
-    @Column(name = "imageUrl")
-    private String imageUrl;
+//    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Image> images;
 
-//    @NotBlank(message="please enter product data")
-    @Column(name = "imageUrls")
-    private String[] imageUrls;
+////    @NotBlank(message="please enter product data")
+//    @Column(name = "imageUrl")
+//    private String imageUrl;
+//
+////    @NotBlank(message="please enter product data")
+//    @Column(name = "imageUrls")
+//    private String[] imageUrls;
 
     @NotBlank(message="please enter product data")
     @Column(name = "createdAt")

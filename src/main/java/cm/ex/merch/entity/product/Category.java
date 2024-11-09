@@ -23,4 +23,8 @@ public class Category {
     @NotBlank(message="please enter product category data")
     @Column(name = "name")
     private String name;
+
+    public Category(String name) {
+        this.name = name;
+    }
 }

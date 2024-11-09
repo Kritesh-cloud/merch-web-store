@@ -1,5 +1,7 @@
 package cm.ex.merch.entity.image;
 
+import cm.ex.merch.entity.Product;
+import cm.ex.merch.entity.product.Category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -28,4 +30,11 @@ public class Image {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "main")
+    private boolean main;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 }
