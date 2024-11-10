@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddProductDto {
+public class AddProductDto{
 
     @NotBlank(message="please enter product data")
     private String name;
@@ -26,10 +26,6 @@ public class AddProductDto {
 
     @NotBlank(message="please enter product data")
     private int quantity;
-
-    private String imageUrl;
-
-    private String[] imageUrls;
 
     // What is the use of status? New, Hot
     private String status;

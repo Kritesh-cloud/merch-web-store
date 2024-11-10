@@ -1,4 +1,4 @@
-package cm.ex.merch.response.basic;
+package cm.ex.merch.dto.response.basic;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

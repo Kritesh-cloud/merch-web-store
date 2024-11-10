@@ -4,8 +4,8 @@ import cm.ex.merch.dto.request.SignInUserDto;
 import cm.ex.merch.dto.request.SignUpUserDto;
 import cm.ex.merch.entity.User;
 import cm.ex.merch.entity.user.Authority;
-import cm.ex.merch.response.token.LoginResponse;
-import cm.ex.merch.response.user.UserResponse;
+import cm.ex.merch.dto.response.authentication.LoginResponse;
+import cm.ex.merch.dto.response.user.BasicUserResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface UserService {
 
     //CREATE
-    public UserResponse addUser(SignUpUserDto signUpUserDto);
+    public BasicUserResponse addUser(SignUpUserDto signUpUserDto);
 
     //READ
     public LoginResponse getUserToken(SignInUserDto signInUserDto);
@@ -22,10 +22,10 @@ public interface UserService {
     public List<User> listAllUserByAuthority(Authority authority);
 
     //UPDATE
-    public UserResponse UpdateUser(User user);
-    public UserResponse BanUserById(UUID userId, String reason);
-    public UserResponse BanUsersByIds(List<UUID> userId, String reason);
+    public BasicUserResponse UpdateUser(User user);
+    public BasicUserResponse BanUserById(UUID userId, String reason);
+    public BasicUserResponse BanUsersByIds(List<UUID> userId, String reason);
 
     //DELETE
-    public UserResponse deleteUserById(UUID userId);
+    public BasicUserResponse deleteUserById(UUID userId);
 }

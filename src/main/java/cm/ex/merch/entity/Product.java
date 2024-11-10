@@ -2,6 +2,7 @@ package cm.ex.merch.entity;
 
 import cm.ex.merch.entity.image.Image;
 import cm.ex.merch.entity.product.Category;
+import cm.ex.merch.entity.user.Authority;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -48,16 +50,8 @@ public class Product {
     @Column(name = "quantity")
     private int quantity;
 
-//    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Image> images;
-
-////    @NotBlank(message="please enter product data")
-//    @Column(name = "imageUrl")
-//    private String imageUrl;
-//
-////    @NotBlank(message="please enter product data")
-//    @Column(name = "imageUrls")
-//    private String[] imageUrls;
+    @Column(name = "imageUrl")
+    private String imageUrl;
 
     @NotBlank(message="please enter product data")
     @Column(name = "createdAt")
@@ -67,11 +61,16 @@ public class Product {
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
-//    @NotBlank(message="please enter product data")
     @Column(name = "status")
     private String status;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "prod_image_list",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "image_id"))
+    private Set<Image> imageList;
 }

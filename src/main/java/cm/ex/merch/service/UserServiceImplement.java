@@ -1,6 +1,5 @@
 package cm.ex.merch.service;
 
-import cm.ex.merch.controller.AuthenticationController;
 import cm.ex.merch.dto.request.SignInUserDto;
 import cm.ex.merch.dto.request.SignUpUserDto;
 import cm.ex.merch.entity.User;
@@ -9,8 +8,8 @@ import cm.ex.merch.entity.user.Ban;
 import cm.ex.merch.repository.AuthorityRepository;
 import cm.ex.merch.repository.BanRepository;
 import cm.ex.merch.repository.UserRepository;
-import cm.ex.merch.response.token.LoginResponse;
-import cm.ex.merch.response.user.UserResponse;
+import cm.ex.merch.dto.response.authentication.LoginResponse;
+import cm.ex.merch.dto.response.user.BasicUserResponse;
 import cm.ex.merch.security.authentication.UserAuth;
 import cm.ex.merch.service.interfaces.UserService;
 import org.modelmapper.ModelMapper;
@@ -19,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -52,12 +50,12 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     @Autowired
     private AuthorityRepository authorityRepository;
 
-    Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+    Logger logger = LoggerFactory.getLogger(UserServiceImplement.class);
 
     @Override
-    public UserResponse addUser(SignUpUserDto signUpUserDto) {
+    public BasicUserResponse addUser(SignUpUserDto signUpUserDto) {
 
-        UserResponse userResponse = new UserResponse();
+        BasicUserResponse userResponse = new BasicUserResponse();
         userResponse.setType("Create");
         userResponse.setStatus(true);
         userResponse.setMessage("Account created successfully");
@@ -127,8 +125,8 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserResponse UpdateUser(User user) {
-        UserResponse userResponse = new UserResponse();
+    public BasicUserResponse UpdateUser(User user) {
+        BasicUserResponse userResponse = new BasicUserResponse();
         userResponse.setType("Update");
         userResponse.setStatus(true);
         userResponse.setMessage("User updated successfully");
@@ -143,8 +141,8 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserResponse BanUserById(UUID userId, String reason) {
-        UserResponse userResponse = new UserResponse();
+    public BasicUserResponse BanUserById(UUID userId, String reason) {
+        BasicUserResponse userResponse = new BasicUserResponse();
         userResponse.setType("Update");
         userResponse.setStatus(true);
         userResponse.setMessage("User banned successfully");
@@ -172,8 +170,8 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserResponse BanUsersByIds(List<UUID> userId, String reason) {
-        UserResponse userResponse = new UserResponse();
+    public BasicUserResponse BanUsersByIds(List<UUID> userId, String reason) {
+        BasicUserResponse userResponse = new BasicUserResponse();
         userResponse.setType("Update");
         userResponse.setStatus(true);
         userResponse.setMessage("All users banned successfully");
@@ -191,8 +189,8 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserResponse deleteUserById(UUID userId) {
-        UserResponse userResponse = new UserResponse();
+    public BasicUserResponse deleteUserById(UUID userId) {
+        BasicUserResponse userResponse = new BasicUserResponse();
         userResponse.setType("Update");
         userResponse.setStatus(true);
         userResponse.setMessage("User deleted successfully");

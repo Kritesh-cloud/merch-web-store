@@ -59,11 +59,23 @@ public class DatabasePopulate {
 
     private void populateUser(UserRepository userRepository, AuthorityRepository authorityRepository, PasswordEncoder passwordEncoder){
         if(userRepository.count() == 0){
-            Authority authority = authorityRepository.findByAuthority("user");
+            Authority authorityAdmin = authorityRepository.findByAuthority("admin");
+            Authority authorityModerator = authorityRepository.findByAuthority("moderator");
+            Authority authorityUser = authorityRepository.findByAuthority("user");
             Set<Authority> authoritySet = new HashSet<>();
-            authoritySet.add(authority);
+
+            authoritySet.add(authorityAdmin);
+            authoritySet.add(authorityModerator);
+            authoritySet.add(authorityUser);
             userRepository.save(new User("Ape","ape@gmail.com",passwordEncoder.encode("password"),authoritySet));
+
+            authoritySet.clear();
+            authoritySet.add(authorityModerator);
+            authoritySet.add(authorityUser);
             userRepository.save(new User("Bear","Bear@gmail.com",passwordEncoder.encode("password"),authoritySet));
+
+            authoritySet.clear();
+            authoritySet.add(authorityUser);
             userRepository.save(new User("Cat","cat@gmail.com",passwordEncoder.encode("password"),authoritySet));
             userRepository.save(new User("Dog","dog@gmail.com",passwordEncoder.encode("password"),authoritySet));
             userRepository.save(new User("Elephant","elephant@gmail.com",passwordEncoder.encode("password"),authoritySet));
@@ -74,16 +86,17 @@ public class DatabasePopulate {
 
     private void populateCategory(CategoryRepository categoryRepository){
         if(categoryRepository.count() == 0){
-            categoryRepository.save(new Category("Apparel"));
-            categoryRepository.save(new Category("Figurines"));
-            categoryRepository.save(new Category("Posters"));
-            categoryRepository.save(new Category("Cards"));
-            categoryRepository.save(new Category("Mugs"));
-            categoryRepository.save(new Category("Keychains "));
-            categoryRepository.save(new Category("Accessories"));
-            categoryRepository.save(new Category("Pins"));
-            categoryRepository.save(new Category("Costumes"));
-            categoryRepository.save(new Category("Decor"));
+            categoryRepository.save(new Category("apparel"));
+            categoryRepository.save(new Category("figurines"));
+            categoryRepository.save(new Category("posters"));
+            categoryRepository.save(new Category("cards"));
+            categoryRepository.save(new Category("mugs"));
+            categoryRepository.save(new Category("keychains "));
+            categoryRepository.save(new Category("accessories"));
+            categoryRepository.save(new Category("pins"));
+            categoryRepository.save(new Category("costumes"));
+            categoryRepository.save(new Category("decor"));
+            categoryRepository.save(new Category("miscellaneous"));
 
             System.out.println("Category Repository has been populated with ten(10) initial categories.");
         }

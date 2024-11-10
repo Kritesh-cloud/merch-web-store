@@ -1,6 +1,6 @@
-package cm.ex.merch.response.token;
+package cm.ex.merch.dto.response.authentication;
 
-import cm.ex.merch.response.basic.Response;
+import cm.ex.merch.dto.response.basic.Response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -28,13 +28,12 @@ public class Image {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "extension")
+    private String extension;
+
     @Column(name = "description")
     private String description;
 
-    @Column(name = "main")
-    private boolean main;
-
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @Column(name = "data")
+    private String data;
 }

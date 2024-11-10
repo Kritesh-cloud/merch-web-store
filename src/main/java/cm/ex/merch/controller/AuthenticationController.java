@@ -2,10 +2,9 @@ package cm.ex.merch.controller;
 
 import cm.ex.merch.dto.request.SignInUserDto;
 import cm.ex.merch.dto.request.SignUpUserDto;
-import cm.ex.merch.response.token.LoginResponse;
-import cm.ex.merch.response.user.UserResponse;
+import cm.ex.merch.dto.response.authentication.LoginResponse;
+import cm.ex.merch.dto.response.user.BasicUserResponse;
 import cm.ex.merch.service.UserServiceImplement;
-import cm.ex.merch.service.interfaces.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +23,6 @@ public class AuthenticationController {
     @Autowired
     private UserServiceImplement userService;
 
-    @Value("${security.jwt.secret-key}")
-    private String secretKey;
-
     @GetMapping("/test")
     public String test(){
         return "Merch Test Controller";
@@ -38,7 +34,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<UserResponse> signUp(@RequestBody @Valid SignUpUserDto signUpUserDto) {
+    public ResponseEntity<BasicUserResponse> signUp(@RequestBody @Valid SignUpUserDto signUpUserDto) {
         logger.info("[INFO] Authentication.controller - register. SignUpUserDto : {}", signUpUserDto.toString());
         return ResponseEntity.ok(userService.addUser(signUpUserDto));
     }
