@@ -42,22 +42,15 @@ public class Product {
     @Column(name = "brand")
     private String brand;
 
-    @NotBlank(message="please enter product data")
     @Column(name = "price")
     private double price;
 
-    @NotBlank(message="please enter product data")
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "imageUrl")
-    private String imageUrl;
-
-    @NotBlank(message="please enter product data")
     @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
-    @NotBlank(message="please enter product data")
     @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
@@ -68,9 +61,27 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "prod_image_list",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "image_id"))
-    private Set<Image> imageList;
+    public Product(String name, String gameTitle, String description, String brand, double price, int quantity, String status, Category category) {
+        this.name = name;
+        this.gameTitle = gameTitle;
+        this.description = description;
+        this.brand = brand;
+        this.price = price;
+        this.quantity = quantity;
+        this.status = status;
+        this.category = category;
+    }
+
+    public Product(String name, String gameTitle, String description, String brand, double price, int quantity, LocalDateTime createdAt, LocalDateTime updatedAt, String status, Category category) {
+        this.name = name;
+        this.gameTitle = gameTitle;
+        this.description = description;
+        this.brand = brand;
+        this.price = price;
+        this.quantity = quantity;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.status = status;
+        this.category = category;
+    }
 }

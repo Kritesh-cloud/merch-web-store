@@ -11,6 +11,14 @@ import java.util.UUID;
 @Repository
 public interface ImageRepository extends JpaRepository<Image, UUID> {
 
-        @Query(nativeQuery = true, value="SELECT * FROM images i where i.article_id = :id")
-        List<Image> findImagesByProductId(Long id);
+        //SELECT * FROM products WHERE id = UNHEX(REPLACE('05b7dd8d-3dae-4016-974e-9b9fe4a03957', '-', ''));
+        //SELECT * FROM images i WHERE i.product_id = UNHEX(REPLACE('54b7a014-d0ad-47d1-877c-b2f3670f0018', '-', '')) LIMIT 1;
+        @Query(nativeQuery = true, value = "SELECT * FROM images i WHERE i.product_id = UNHEX(REPLACE(:id, '-', ''))")
+        List<Image> findImagesByProductId(String id);
+
+        @Query(nativeQuery = true, value = "SELECT * FROM images i WHERE i.id = UNHEX(REPLACE(:id, '-', '')) LIMIT 1")
+        Image findImagesById(String id);
+
+        @Query(nativeQuery = true, value = "SELECT * FROM images ORDER BY created_at DESC LIMIT 1")
+        Image findLastImage();
 }

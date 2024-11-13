@@ -8,19 +8,21 @@ import cm.ex.merch.dto.response.product.ProductListResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
 public interface ProductService {
 
     //CREATE
-    public BasicProductResponse addProduct(AddProductDto addProductDto);
-    public BasicProductResponse addProductWithImages(AddProductDto addProductDto, MultipartFile... files) throws IOException;
+    public BasicProductResponse addProductOld(AddProductDto addProductDto) throws AccessDeniedException;
+    public BasicProductResponse addProductWithImage(AddProductDto addProductDto, MultipartFile... files) throws IOException;
 
     //READ
     public ProductListResponse listProductBySerial(FilterProductDto filterProductDto);
+    public byte[] getImageById(String imageId);
 
     //UPDATE
-    public BasicProductResponse updateProduct(UpdateProductDto updateProductDto);
+    public BasicProductResponse updateProductOld(UpdateProductDto updateProductDto) throws AccessDeniedException;
     public BasicProductResponse updateProductWithImages(UpdateProductDto updateProductDto, MultipartFile... files) throws IOException;
 
     //DELETE

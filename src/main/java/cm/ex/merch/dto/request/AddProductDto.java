@@ -21,10 +21,8 @@ public class AddProductDto{
     @NotBlank(message="please enter product data")
     private String brand;
 
-    @NotBlank(message="please enter product data")
     private double price;
 
-    @NotBlank(message="please enter product data")
     private int quantity;
 
     // What is the use of status? New, Hot

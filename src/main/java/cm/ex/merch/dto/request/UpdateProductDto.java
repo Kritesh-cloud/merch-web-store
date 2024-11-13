@@ -13,5 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UpdateProductDto extends AddProductDto{
 
-    UUID[] removeImageIds;
+    String id;
+
+    String[] removeImageIds;
 }

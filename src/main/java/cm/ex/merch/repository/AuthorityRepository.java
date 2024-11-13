@@ -12,6 +12,7 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
     Authority findByAuthority(String authority);
 
     Authority findByLevel(String level);
+
 }
 
 

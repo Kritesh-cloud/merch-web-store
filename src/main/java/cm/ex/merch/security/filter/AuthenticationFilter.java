@@ -73,6 +73,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             final String token = authHeader.substring(7);
 
             UserAuth auth = userTokenAuth(token);
+
+            System.out.println("## auth bearer : "+auth.toString());
             if(!auth.isAuthenticated()) {
                 throw new AccessDeniedException("Bad Credentials");
             }
@@ -98,7 +100,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if(user == null){
             throw new UsernameNotFoundException("Username not found");
         }
-        UserAuth userAuth = new UserAuth(false,user.getEmail(),null,null,null,null);
+        UserAuth userAuth = new UserAuth(true,user.getEmail(),null,null,null,null);
         if(!jwtService.isTokenValid(token,userAuth)){
             throw new JwtException("Invalid token");
         }

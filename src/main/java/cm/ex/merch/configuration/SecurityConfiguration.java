@@ -35,6 +35,9 @@ public class SecurityConfiguration {
                         .requestMatchers("/signIn").permitAll()
                         .requestMatchers("/signUp").permitAll()
 
+                        .requestMatchers("/product/list").permitAll()
+                        .requestMatchers("/product/image/{imageId}").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .build();

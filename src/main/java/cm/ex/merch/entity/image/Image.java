@@ -1,6 +1,7 @@
 package cm.ex.merch.entity.image;
 
 import cm.ex.merch.entity.Product;
+import cm.ex.merch.entity.User;
 import cm.ex.merch.entity.product.Category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -34,6 +36,23 @@ public class Image {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "createdAt")
+    private LocalDateTime createdAt;
+
     @Column(name = "data")
     private String data;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    public Image(String image, String name, String extension, String description, LocalDateTime createdAt, String data, Product product) {
+        this.image = image;
+        this.name = name;
+        this.extension = extension;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.data = data;
+        this.product = product;
+    }
 }
