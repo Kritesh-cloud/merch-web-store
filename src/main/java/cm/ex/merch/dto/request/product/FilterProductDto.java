@@ -1,4 +1,4 @@
-package cm.ex.merch.dto.request;
+package cm.ex.merch.dto.request.product;
 
 
 import lombok.AllArgsConstructor;

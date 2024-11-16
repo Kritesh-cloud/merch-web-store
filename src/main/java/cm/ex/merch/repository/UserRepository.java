@@ -1,5 +1,6 @@
 package cm.ex.merch.repository;
 
+import cm.ex.merch.entity.Product;
 import cm.ex.merch.entity.User;
 import cm.ex.merch.entity.user.Authority;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +19,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query( nativeQuery = true, value = "SELECT * FROM users u WHERE u.id = :userId")
     Optional<User> findByUserId(UUID userId);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM user u WHERE u.id = UNHEX(REPLACE(:id, '-', '')) LIMIT 1")
+    User findUserByUserId(String id);
 
     @Query( nativeQuery = true, value = "SELECT u.* FROM users u " +
             "JOIN user_authority_list ual ON u.id = ual.user_id " +

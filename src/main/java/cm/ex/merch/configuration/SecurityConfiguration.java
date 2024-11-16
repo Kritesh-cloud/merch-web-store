@@ -28,7 +28,6 @@ public class SecurityConfiguration {
         logger.info("SecurityConfiguration");
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-//                .csrf(csrf -> csrf.disable())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/test").permitAll()

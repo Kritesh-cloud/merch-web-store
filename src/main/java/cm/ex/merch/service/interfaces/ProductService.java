@@ -1,15 +1,14 @@
 package cm.ex.merch.service.interfaces;
 
-import cm.ex.merch.dto.request.AddProductDto;
-import cm.ex.merch.dto.request.FilterProductDto;
-import cm.ex.merch.dto.request.UpdateProductDto;
+import cm.ex.merch.dto.request.product.AddProductDto;
+import cm.ex.merch.dto.request.product.FilterProductDto;
+import cm.ex.merch.dto.request.product.UpdateProductDto;
 import cm.ex.merch.dto.response.product.BasicProductResponse;
 import cm.ex.merch.dto.response.product.ProductListResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-import java.util.UUID;
 
 public interface ProductService {
 
@@ -26,8 +25,8 @@ public interface ProductService {
     public BasicProductResponse updateProductWithImages(UpdateProductDto updateProductDto, MultipartFile... files) throws IOException;
 
     //DELETE
-    public BasicProductResponse deleteProductById(UUID id);
-    public BasicProductResponse deleteProductByIds(UUID[] ids);
+    public BasicProductResponse deleteProductById(String id) throws AccessDeniedException;
+    public BasicProductResponse deleteProductByIds(String[] ids) throws AccessDeniedException;
 }
 
 

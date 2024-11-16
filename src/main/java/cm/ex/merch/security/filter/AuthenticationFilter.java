@@ -2,6 +2,7 @@ package cm.ex.merch.security.filter;
 
 import cm.ex.merch.controller.AuthenticationController;
 import cm.ex.merch.entity.User;
+import cm.ex.merch.entity.image.Image;
 import cm.ex.merch.entity.user.Authority;
 import cm.ex.merch.repository.AuthorityRepository;
 import cm.ex.merch.repository.UserRepository;
@@ -30,6 +31,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -100,7 +102,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if(user == null){
             throw new UsernameNotFoundException("Username not found");
         }
-        UserAuth userAuth = new UserAuth(true,user.getEmail(),null,null,null,null);
+
+        UserAuth userAuth = new UserAuth(true,user.getEmail(),null,null,user.getFullName(),convertToGrantedAuthorities(user.getAuthority()));
         if(!jwtService.isTokenValid(token,userAuth)){
             throw new JwtException("Invalid token");
         }
@@ -119,4 +122,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
                 .collect(Collectors.toList());
     }
+
+
 }

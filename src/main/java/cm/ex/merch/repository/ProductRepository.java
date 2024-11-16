@@ -2,6 +2,7 @@ package cm.ex.merch.repository;
 
 import cm.ex.merch.entity.Product;
 import cm.ex.merch.entity.product.Category;
+import cm.ex.merch.entity.product.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -24,15 +25,12 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query(nativeQuery = true, value = "SELECT * FROM products p WHERE p.id = UNHEX(REPLACE(:id, '-', '')) LIMIT 1")
     Product findProductById(String id);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM products ORDER BY created_at DESC")
-    Product findLastProduct();
-
     @Query(nativeQuery = true, value = "SELECT * FROM products ORDER BY created_at DESC LIMIT 1")
     Product findOneLastProduct();
 
-    //	select*from users order by id desc limit 1;
-//    @Query(nativeQuery = true, value="SELECT * FROM products ORDER BY article_id DESC LIMIT 1")
-//    Product findLastArticle();
+    @Query(nativeQuery = true, value = "SELECT * FROM products LIMIT :start, :count")
+    List<Product> findProductByLimit(int start, int count);
+
 }
 /*
 

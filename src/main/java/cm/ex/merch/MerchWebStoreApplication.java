@@ -12,6 +12,5 @@ public class MerchWebStoreApplication {
 	}
 /*
 drop database merch; create database merch; use merch;
-* */
+*/
 }
-// franchise, started date

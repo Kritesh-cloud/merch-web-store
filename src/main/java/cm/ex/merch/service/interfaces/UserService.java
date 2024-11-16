@@ -1,7 +1,7 @@
 package cm.ex.merch.service.interfaces;
 
-import cm.ex.merch.dto.request.SignInUserDto;
-import cm.ex.merch.dto.request.SignUpUserDto;
+import cm.ex.merch.dto.request.authentication.SignInUserDto;
+import cm.ex.merch.dto.request.product.SignUpUserDto;
 import cm.ex.merch.entity.User;
 import cm.ex.merch.entity.user.Authority;
 import cm.ex.merch.dto.response.authentication.LoginResponse;

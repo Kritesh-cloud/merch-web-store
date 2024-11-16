@@ -1,8 +1,8 @@
 package cm.ex.merch.controller;
 
-import cm.ex.merch.dto.request.AddProductDto;
-import cm.ex.merch.dto.request.FilterProductDto;
-import cm.ex.merch.dto.request.UpdateProductDto;
+import cm.ex.merch.dto.request.product.AddProductDto;
+import cm.ex.merch.dto.request.product.FilterProductDto;
+import cm.ex.merch.dto.request.product.UpdateProductDto;
 import cm.ex.merch.dto.response.product.BasicProductResponse;
 import cm.ex.merch.dto.response.product.ProductListResponse;
 import cm.ex.merch.service.ProductServiceImplement;

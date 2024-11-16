@@ -46,6 +46,11 @@ public class Image {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
     public Image(String image, String name, String extension, String description, LocalDateTime createdAt, String data, Product product) {
         this.image = image;
         this.name = name;

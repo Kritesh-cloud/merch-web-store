@@ -61,6 +61,17 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
     public Product(String name, String gameTitle, String description, String brand, double price, int quantity, String status, Category category) {
         this.name = name;
         this.gameTitle = gameTitle;
