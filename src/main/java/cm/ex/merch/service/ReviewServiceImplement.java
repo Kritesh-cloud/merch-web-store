@@ -164,7 +164,19 @@ public class ReviewServiceImplement implements ReviewService {
     }
 
     @Override
-    public BasicReviewResponse deleteReview(ReviewStatusDto reviewStatusDto) {
-        return null;
+    public BasicReviewResponse deleteReview(String reviewId) throws AccessDeniedException {
+        BasicReviewResponse basicReviewResponse = new BasicReviewResponse(true, "Review deleted successfully", null, null);
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied");
+
+        Review review = reviewRepository.findReviewById(reviewId);
+        if (review == null) throw new NoSuchElementException("Review doesn't exists");
+
+        User user = userRepository.findUserByUserId(review.getUser().getId().toString());
+        if(user==null || !user.getEmail().equals(userAuth.getEmail())) throw new AccessDeniedException("Access denied");
+
+        reviewRepository.delete(review);
+
+        return basicReviewResponse;
     }
 }

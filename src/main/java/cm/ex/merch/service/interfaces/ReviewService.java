@@ -25,7 +25,7 @@ public interface ReviewService {
     public BasicReviewResponse editStatusHidden(ReviewStatusDto reviewStatusDto);
 
     // DELETE
-    public BasicReviewResponse deleteReview(ReviewStatusDto reviewStatusDto);
+    public BasicReviewResponse deleteReview(String reviewId) throws AccessDeniedException;
 }
 
 
