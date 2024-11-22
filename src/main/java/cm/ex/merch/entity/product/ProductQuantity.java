@@ -26,4 +26,9 @@ public class ProductQuantity {
     @OneToOne
     @JoinColumn(name = "product_id", referencedColumnName = "id")
     private Product product;
+
+    public ProductQuantity(int quantity, Product product) {
+        this.quantity = quantity;
+        this.product = product;
+    }
 }

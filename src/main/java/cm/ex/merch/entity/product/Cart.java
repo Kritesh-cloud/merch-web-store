@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,12 +22,27 @@ public class Cart {
     @Column(name = "id")
     private UUID id;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "cart_id", referencedColumnName = "id")
-    private List<ProductQuantity> productQuantity;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "purchased_at")
+    private LocalDateTime purchasedAt;
 
     @OneToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private User customer;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "cart_id", referencedColumnName = "id")
+    private List<ProductQuantity> productQuantity;
+
+    public Cart(User customer, List<ProductQuantity> productQuantity) {
+        this.customer = customer;
+        this.productQuantity = productQuantity;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

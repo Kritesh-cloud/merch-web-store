@@ -93,7 +93,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         }
         User user = userRepository.findByEmail(userDetails.getUsername());
 
-        return new UserAuth(true,username,null,null,user.getFullName(),convertToGrantedAuthorities(user.getAuthority()));
+        return new UserAuth(user.getId().toString(),true,username,null,null,user.getFullName(),convertToGrantedAuthorities(user.getAuthority()));
     }
 
     private UserAuth userTokenAuth(String token) throws AccessDeniedException {
@@ -103,7 +103,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             throw new UsernameNotFoundException("Username not found");
         }
 
-        UserAuth userAuth = new UserAuth(true,user.getEmail(),null,null,user.getFullName(),convertToGrantedAuthorities(user.getAuthority()));
+        UserAuth userAuth = new UserAuth(user.getId().toString(),true,user.getEmail(),null,null,user.getFullName(),convertToGrantedAuthorities(user.getAuthority()));
         if(!jwtService.isTokenValid(token,userAuth)){
             throw new JwtException("Invalid token");
         }

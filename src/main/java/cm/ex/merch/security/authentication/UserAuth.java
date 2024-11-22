@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserAuth implements Authentication {
 
+    private String id;
     private boolean authenticated;
     private String email;
     private String password;
@@ -55,4 +56,5 @@ public class UserAuth implements Authentication {
     public String getName() {
         return fullName;
     }
+
 }

@@ -1,7 +1,11 @@
 package cm.ex.merch.service;
 
 import cm.ex.merch.dto.request.authentication.SignInUserDto;
-import cm.ex.merch.dto.request.product.SignUpUserDto;
+import cm.ex.merch.dto.request.authentication.SignUpUserDto;
+import cm.ex.merch.dto.request.user.UpdateUserDto;
+import cm.ex.merch.dto.response.user.UserInfoDto;
+import cm.ex.merch.dto.response.user.UserInfo;
+import cm.ex.merch.dto.response.user.UserInfoListDto;
 import cm.ex.merch.entity.User;
 import cm.ex.merch.entity.user.Authority;
 import cm.ex.merch.entity.user.Ban;
@@ -9,7 +13,7 @@ import cm.ex.merch.repository.AuthorityRepository;
 import cm.ex.merch.repository.BanRepository;
 import cm.ex.merch.repository.UserRepository;
 import cm.ex.merch.dto.response.authentication.LoginResponse;
-import cm.ex.merch.dto.response.user.BasicUserResponse;
+import cm.ex.merch.dto.response.authentication.BasicUserResponse;
 import cm.ex.merch.security.authentication.UserAuth;
 import cm.ex.merch.service.interfaces.UserService;
 import org.modelmapper.ModelMapper;
@@ -18,19 +22,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImplement implements UserService, UserDetailsService {
-
 
     @Autowired
     private ModelMapper modelMapper;
@@ -55,155 +60,160 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     @Override
     public BasicUserResponse addUser(SignUpUserDto signUpUserDto) {
 
-        BasicUserResponse userResponse = new BasicUserResponse();
-        userResponse.setType("Create");
-        userResponse.setStatus(true);
-        userResponse.setMessage("Account created successfully");
-        User userEmail = userRepository.findByEmail(signUpUserDto.getEmail());
-        if(userEmail != null){
-            userResponse.setStatus(false);
-            userResponse.setMessage("User with this email already exists");
-            return userResponse;
-        }
+        BasicUserResponse userResponse = new BasicUserResponse(false, "User with this email already exists", "create");
 
-        Set<Authority> authorityList = new HashSet<>();
-        Authority userAuthority = authorityRepository.findByAuthority("user");
-        authorityList.add(userAuthority);
+        User userEmail = userRepository.findByEmail(signUpUserDto.getEmail());
+        if(userEmail != null) return userResponse;
+
+        Set<Authority> authorityList = Set.of(authorityRepository.findByAuthority("user"));
 
         User user = modelMapper.map(signUpUserDto, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setAuthority(authorityList);
 
-        logger.info("[Info] UserServiceImplement, SignUpUserDto :{}",signUpUserDto.toString());
-        logger.info("[Info] UserServiceImplement, User :{}",user.toString());
-
         userRepository.save(user);
-        return userResponse;
+
+        return new BasicUserResponse(true, "Account created successfully", "create");
     }
 
     @Override
     public LoginResponse getUserToken(SignInUserDto signInUserDto){
-        LoginResponse loginResponse = new LoginResponse(false,null,null);
+
+        LoginResponse loginResponse = new LoginResponse(false,"User not found, cannot make token",null);
+
         User user = userRepository.findByEmail(signInUserDto.getEmail());
-        if(user == null) {
-            loginResponse.setMessage("user not found, cannot make token");
-            return loginResponse;
-        }
-        if(!passwordEncoder.matches(signInUserDto.getPassword(),user.getPassword())){
-            logger.info("User password doesn't matches "+signInUserDto.getPassword()+", "+user.getPassword());
-            loginResponse.setMessage("Email or password doesn't match");
-            return loginResponse;
-        }
+        if(user == null || !passwordEncoder.matches(signInUserDto.getPassword(),user.getPassword())) return loginResponse;
 
-            logger.info("User password matches "+signInUserDto.getPassword()+", "+user.getPassword());
-            UserAuth userAuth = new UserAuth(true,user.getEmail(),user.getPassword(),null,user.getPassword(),null);
-            userAuth.setAuthority(convertToGrantedAuthorities(user.getAuthority()));
-            String jwtToken = jwtService.generateToken(userAuth);
+        UserAuth userAuth = new UserAuth(user.getId().toString(),true,user.getEmail(),user.getPassword(),null,user.getPassword(),convertToGrantedAuthorities(user.getAuthority()));
+        String jwtToken = jwtService.generateToken(userAuth);
 
-            loginResponse.setStatus(true);
-            loginResponse.setMessage("user token");
-            loginResponse.setToken(jwtToken);
-
-
-        return loginResponse;
+        return new LoginResponse(true,"User token",jwtToken);
     }
 
     @Override
-    public User getUserById(UUID userId) {
-        Optional<User> user = userRepository.findByUserId(userId);
-        return user.orElse(null);
+    public UserInfoDto getUserById(String userId) throws AccessDeniedException {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
+
+        UserInfoDto invalidBasicUserInfoDto = new UserInfoDto(false,"User not found", null);
+        User user = userRepository.findUserByUserId(userId);
+
+        if(user == null || !userAuth.getEmail().equalsIgnoreCase(user.getEmail())) return invalidBasicUserInfoDto;
+
+        UserInfo userInfo = modelMapper.map(userAuth, UserInfo.class);
+        userInfo.setAuthorityList(convertToStringListAuthorities(userAuth.getAuthority()));
+
+        return new UserInfoDto(true, "User details", userInfo);
     }
 
     @Override
-    public List<User> listAllUsers() {
-        return userRepository.findAll();
+    public UserInfoListDto listAllUsers() throws AccessDeniedException {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
+
+        if (userAuth.getAuthority().contains(new SimpleGrantedAuthority(authorityRepository.findByAuthority("user").getAuthority()))) throw new AccessDeniedException("Access denied. Not authorized.");
+
+        List<User> userList = userRepository.findAll();
+
+        List<UserInfo> userInfoList = userList.stream().map(
+                user -> {
+                    UserInfo userInfo = new UserInfo(user.getId().toString(),user.getFullName(),user.getEmail(),null);
+                    userInfo.setAuthorityList(convertToStringListAuthorities(userAuth.getAuthority()));
+                    return userInfo;
+                })
+        .toList();
+
+        return new UserInfoListDto(true,"User details list",userInfoList);
     }
 
     @Override
-    public List<User> listAllUserByAuthority(Authority authority){
-        return userRepository.findUserByAuthority(authority.getAuthority());
+    public UserInfoListDto listAllUserByAuthority(String authority) throws AccessDeniedException {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
+
+        if (userAuth.getAuthority().contains(new SimpleGrantedAuthority(authorityRepository.findByAuthority("user").getAuthority()))) throw new AccessDeniedException("Access denied. Not authorized.");
+
+        List<User> userList = userRepository.findUserByAuthority(authority);
+        List<UserInfo> userInfoList = userList.stream().map(
+                        user -> {
+                            UserInfo userInfo = new UserInfo(user.getId().toString(),user.getFullName(),user.getEmail(),null);
+                            userInfo.setAuthorityList(convertToStringListAuthorities(userAuth.getAuthority()));
+                            return userInfo;
+                        })
+                .toList();
+        return new UserInfoListDto(true,"User details list",userInfoList);
     }
 
     @Override
-    public BasicUserResponse UpdateUser(User user) {
-        BasicUserResponse userResponse = new BasicUserResponse();
-        userResponse.setType("Update");
-        userResponse.setStatus(true);
-        userResponse.setMessage("User updated successfully");
-        User userEmail = userRepository.findByEmail(user.getEmail());
-        if(userEmail == null){
-            userResponse.setStatus(false);
-            userResponse.setMessage("User not found");
-            return userResponse;
-        }
+    public BasicUserResponse UpdateUser(UpdateUserDto updateUserDto) throws AccessDeniedException {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
+
+        BasicUserResponse invalidBasicUserResponse = new BasicUserResponse(false,"User not found", "update");
+        User user = userRepository.findUserByUserId(updateUserDto.getId());
+
+        if(user == null || !userAuth.getEmail().equalsIgnoreCase(user.getEmail())) return invalidBasicUserResponse;
+
+        Set<Authority> authorityList = Set.of(authorityRepository.findByAuthority("user"));
+
+        user = modelMapper.map(updateUserDto, User.class);
+        user.setId(UUID.fromString(updateUserDto.getId()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setAuthority(authorityList);
+
         userRepository.save(user);
-        return userResponse;
+
+        return new BasicUserResponse(true, "User updated successfully", "update");
     }
 
     @Override
-    public BasicUserResponse BanUserById(UUID userId, String reason) {
-        BasicUserResponse userResponse = new BasicUserResponse();
-        userResponse.setType("Update");
-        userResponse.setStatus(true);
-        userResponse.setMessage("User banned successfully");
-        Optional<User> user = userRepository.findByUserId(userId);
+    public BasicUserResponse BanUserById(String userId, String reason) throws AccessDeniedException {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
 
-        if(user.isEmpty()){
-            userResponse.setStatus(false);
-            userResponse.setMessage("User not found");
-            return userResponse;
-        }
+        if (userAuth.getAuthority().contains(new SimpleGrantedAuthority(authorityRepository.findByAuthority("user").getAuthority()))) throw new AccessDeniedException("Access denied. Not authorized.");
 
-        Optional<Ban> bannedUser = banRepository.findByUserId(userId);
-        if(bannedUser.isPresent()){
-            userResponse.setStatus(true);
-            userResponse.setMessage("This user is already banned");
-            return userResponse;
-        }
+        BasicUserResponse invalidBasicUserResponse = new BasicUserResponse(false,"User not found", "update");
+        User user = userRepository.findUserByUserId(userId);
 
-        Ban banUser = new Ban();
-        banUser.setUser(user.get());
-        banUser.setDatetime(LocalDateTime.now());
-        banUser.setReason(reason);
+        if(user == null || !userAuth.getEmail().equalsIgnoreCase(user.getEmail())) return invalidBasicUserResponse;
+
+        invalidBasicUserResponse = new BasicUserResponse(true,"This user is already banned", "update");
+        Ban bannedUser = banRepository.findByUserId(userId);
+        if(bannedUser != null) return invalidBasicUserResponse;
+
+        Ban banUser = new Ban(reason,user);
         banRepository.save(banUser);
-        return userResponse;
+
+        return new BasicUserResponse(true,"User "+user.getFullName()+" is banned", "update");
     }
 
     @Override
-    public BasicUserResponse BanUsersByIds(List<UUID> userId, String reason) {
-        BasicUserResponse userResponse = new BasicUserResponse();
-        userResponse.setType("Update");
-        userResponse.setStatus(true);
-        userResponse.setMessage("All users banned successfully");
+    public BasicUserResponse BanUsersByIds(List<String> userId, String reason){
 
-        try {
-            userId.forEach(id -> BanUserById(id, reason));
-        }
-        catch(Exception e){
-            System.out.println("ERROR: Banning multiple users. ERROR: "+e);
-            userResponse.setStatus(false);
-            userResponse.setMessage("Couldn't ban all of these users.");
-            return userResponse;
-        }
-        return userResponse;
+        userId.forEach(id -> {
+            try {
+                BasicUserResponse basicUserResponse = BanUserById(id, reason);
+            } catch (AccessDeniedException e) {
+                throw new RuntimeException("ERROR: error while banning. "+e);
+            }
+        });
+
+        return new BasicUserResponse(true,"All users are banned successfully", "update");
     }
 
     @Override
-    public BasicUserResponse deleteUserById(UUID userId) {
-        BasicUserResponse userResponse = new BasicUserResponse();
-        userResponse.setType("Update");
-        userResponse.setStatus(true);
-        userResponse.setMessage("User deleted successfully");
-        Optional<User> user = userRepository.findByUserId(userId);
+    public BasicUserResponse deleteUserById(String userId) throws AccessDeniedException {
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
 
-        if(user.isEmpty()){
-            userResponse.setStatus(false);
-            userResponse.setMessage("User not found");
-            return userResponse;
-        }
+        BasicUserResponse invalidBasicUserResponse = new BasicUserResponse(false,"User not found", "update");
+        User user = userRepository.findUserByUserId(userId);
 
-        userRepository.delete(user.get());
-        return userResponse;
+        if(user == null || !userAuth.getEmail().equalsIgnoreCase(user.getEmail())) return invalidBasicUserResponse;
+
+        userRepository.delete(user);
+        return new BasicUserResponse(true,"User deleted successfully", "delete");
     }
 
     @Override
@@ -222,6 +232,11 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     private List<GrantedAuthority> convertToGrantedAuthorities(Set<Authority> authorities) {
         return authorities.stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+                .collect(Collectors.toList());
+    }
+    public static List<String> convertToStringListAuthorities(List<GrantedAuthority> grantedAuthorities) {
+        return grantedAuthorities.stream()
+                .map(GrantedAuthority::getAuthority) // Extract the authority name
                 .collect(Collectors.toList());
     }
 }

@@ -10,6 +10,6 @@ import java.util.UUID;
 @Repository
 public interface BanRepository extends JpaRepository<Ban, UUID> {
 
-    //@Query(nativeQuery = true, value = "SELECT * FROM user_ban ub WHERE ub.user_id = :userId");
-    Optional<Ban> findByUserId(UUID userId);
+    //@Query(nativeQuery = true, value = "SELECT * FROM user_ban ub WHERE ub.user_id = :userId LIMIT 1");
+    Ban findByUserId(String userId);
 }

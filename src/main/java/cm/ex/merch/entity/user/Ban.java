@@ -33,4 +33,13 @@ public class Ban {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    public Ban(String reason, User user) {
+        this.reason = reason;
+        this.user = user;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        datetime = LocalDateTime.now();
+    }
 }

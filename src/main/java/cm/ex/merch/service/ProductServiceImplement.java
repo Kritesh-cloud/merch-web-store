@@ -6,15 +6,18 @@ import cm.ex.merch.dto.request.product.UpdateProductDto;
 import cm.ex.merch.dto.response.product.BasicProductResponse;
 import cm.ex.merch.dto.response.product.ProductDto;
 import cm.ex.merch.dto.response.product.ProductListResponse;
+import cm.ex.merch.dto.response.product.cart.BasicCartResponse;
+import cm.ex.merch.dto.response.product.cart.CartListResponse;
 import cm.ex.merch.entity.Product;
+import cm.ex.merch.entity.User;
 import cm.ex.merch.entity.image.Image;
+import cm.ex.merch.entity.product.Cart;
 import cm.ex.merch.entity.product.Category;
+import cm.ex.merch.entity.product.ProductQuantity;
 import cm.ex.merch.entity.user.Authority;
-import cm.ex.merch.repository.AuthorityRepository;
-import cm.ex.merch.repository.CategoryRepository;
-import cm.ex.merch.repository.ImageRepository;
-import cm.ex.merch.repository.ProductRepository;
+import cm.ex.merch.repository.*;
 import cm.ex.merch.security.authentication.UserAuth;
+import cm.ex.merch.service.interfaces.CartService;
 import cm.ex.merch.service.interfaces.ProductService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -28,11 +31,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class ProductServiceImplement implements ProductService {
+public class ProductServiceImplement implements ProductService, CartService {
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     AuthorityRepository authorityRepository;
@@ -45,6 +50,12 @@ public class ProductServiceImplement implements ProductService {
 
     @Autowired
     CategoryRepository categoryRepository;
+
+    @Autowired
+    CartRepository cartRepository;
+
+    @Autowired
+    ProductQuantityRepository productQuantityRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -138,7 +149,7 @@ public class ProductServiceImplement implements ProductService {
     @Override
     public byte[] getImageById(String imageId) {
         Image imageById = imageRepository.findImagesById(imageId);
-        return java.util.Base64.getDecoder().decode(imageById.getImage());
+        return Base64.getDecoder().decode(imageById.getImage());
     }
 
     @Override
@@ -256,5 +267,49 @@ public class ProductServiceImplement implements ProductService {
                         }
                 )
                 .toArray(String[]::new);
+    }
+
+
+    @Override
+    public BasicCartResponse addToCart(String productId, String type) throws IOException {
+
+        BasicCartResponse basicCartResponse = new BasicCartResponse(true, "Product added to the cart",null,null);
+
+        UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied");
+
+        Authority authority = authorityRepository.findByAuthority("user");
+        GrantedAuthority authorityUser = new SimpleGrantedAuthority(authority.getAuthority());
+        List<GrantedAuthority> userAuthorityList = userAuth.getAuthority();
+        if (userAuthorityList.contains(authorityUser)) throw new AccessDeniedException("Access denied");
+
+        Product product = productRepository.findProductById(productId);
+        if(product==null) throw new NoSuchElementException("Product not found");
+
+        Cart cart = cartRepository.findCartByUserId(userAuth.getId());
+
+        User user = userRepository.findUserByUserId(userAuth.getId());
+
+        if(cart==null){
+            cart = new Cart(user, List.of(new ProductQuantity(1, product)));
+            cartRepository.save(cart);
+        }
+
+        List<ProductQuantity> productQuantityList = cart.getProductQuantity();
+        productQuantityList.add(new ProductQuantity(1, product));
+        cartRepository.save(cart);
+        
+
+        return null;
+    }
+
+    @Override
+    public CartListResponse listProductsInCart() {
+        return null;
+    }
+
+    @Override
+    public BasicCartResponse removeFromCart(String productId, String type) {
+        return null;
     }
 }

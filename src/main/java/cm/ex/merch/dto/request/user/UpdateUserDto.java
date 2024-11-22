@@ -1,4 +1,4 @@
-package cm.ex.merch.dto.request.product;
+package cm.ex.merch.dto.request.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpUserDto {
+public class UpdateUserDto {
+
+    @NotBlank(message = "input field cannot be blank")
+    private String id;
 
     @Email(message = "invalid email format")
     private String email;
@@ -21,3 +24,4 @@ public class SignUpUserDto {
     private String password;
 
 }
+

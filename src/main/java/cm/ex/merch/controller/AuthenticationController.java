@@ -1,9 +1,9 @@
 package cm.ex.merch.controller;
 
 import cm.ex.merch.dto.request.authentication.SignInUserDto;
-import cm.ex.merch.dto.request.product.SignUpUserDto;
+import cm.ex.merch.dto.request.authentication.SignUpUserDto;
 import cm.ex.merch.dto.response.authentication.LoginResponse;
-import cm.ex.merch.dto.response.user.BasicUserResponse;
+import cm.ex.merch.dto.response.authentication.BasicUserResponse;
 import cm.ex.merch.service.UserServiceImplement;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

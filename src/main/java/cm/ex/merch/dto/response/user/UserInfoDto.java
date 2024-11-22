@@ -1,6 +1,7 @@
 package cm.ex.merch.dto.response.user;
 
 import cm.ex.merch.dto.response.basic.Response;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -8,12 +9,13 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
-public class BasicUserResponse extends Response {
-    private String type; //create, read, update, delete
+@AllArgsConstructor
+public class UserInfoDto extends Response {
 
-    public BasicUserResponse(boolean status, String message, String type) {
+    private UserInfo userInfo;
+
+    public UserInfoDto(boolean status, String message, UserInfo userInfo) {
         super(status, message);
-        this.type = type;
+        this.userInfo = userInfo;
     }
-
 }
