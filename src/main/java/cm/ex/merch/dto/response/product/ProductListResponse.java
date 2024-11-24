@@ -15,4 +15,9 @@ import java.util.List;
 public class ProductListResponse extends Response {
 
     private List<ProductDto> productList;
+
+    public ProductListResponse(boolean status, String message, List<ProductDto> productList) {
+        super(status, message);
+        this.productList = productList;
+    }
 }

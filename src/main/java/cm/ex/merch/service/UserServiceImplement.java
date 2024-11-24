@@ -122,7 +122,6 @@ public class UserServiceImplement implements UserService, UserDetailsService {
                     return userInfo;
                 })
         .toList();
-
         return new UserInfoListDto(true,"User details list",userInfoList);
     }
 

@@ -4,31 +4,36 @@ import cm.ex.merch.dto.response.product.cart.BasicCartResponse;
 import cm.ex.merch.dto.response.product.cart.CartListResponse;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 public interface CartService {
 
     // CREATE or add
-    public BasicCartResponse addToCart(String productId, String type) throws IOException;
+    public BasicCartResponse addToCart(String productId) throws IOException;
 
     // READ or list
-    public CartListResponse listProductsInCart ();
+    public CartListResponse listProductsInCart () throws AccessDeniedException;
+
+    //UPDATE
+    public BasicCartResponse UpdateProductQuantity(String productId, boolean increase) throws AccessDeniedException;
 
     // Delete or remove
-    public BasicCartResponse removeFromCart (String productId, String type);
+    public BasicCartResponse removeFromCart (String productId) throws AccessDeniedException;
 
 }
 
 /*
 
 #CREATE
-BasicCartAndWishlistResponse : addToCartOrWishlist (String productId, String type)
+BasicCartResponse : addToCart (String productId)
 
 #READ
-CartAndWishlistResponse : listProductsInCartOrWishlist (String type)
+CartListResponse : listProductsInCart (String type)
 
 #UPDATE
+BasicCartResponse : UpdateProductQuantity (ring productId, boolean increase)
 
 #DELETE
-BasicCartAndWishlistResponse : removeFromCartOrWishlist (String productId, String type)
+BasicCartResponse : removeFromCart (String productId)
 
 */

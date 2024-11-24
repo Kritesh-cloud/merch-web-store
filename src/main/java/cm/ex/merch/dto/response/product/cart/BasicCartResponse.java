@@ -16,11 +16,9 @@ import java.util.List;
 public class BasicCartResponse extends Response {
 
     private String[] remarks;
-    private List<ProductQuantity> productQuantityList;
 
-    public BasicCartResponse(boolean status, String message, String[] remarks, List<ProductQuantity> productQuantityList) {
+    public BasicCartResponse(boolean status, String message, String[] remarks) {
         super(status, message);
         this.remarks = remarks;
-        this.productQuantityList = productQuantityList;
     }
 }

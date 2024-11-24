@@ -182,7 +182,7 @@ public class DatabasePopulate {
                 imageData = Files.readAllBytes(Paths.get(deviceFilePath + prd.getName() + ".jpg"));
                 String imgFile = Base64.getEncoder().encodeToString(imageData);
                 lastProduct = productRepository.findOneLastProduct();
-                Image image = new Image(imgFile, lastProduct.getName(), ".jpg", lastProduct.getDescription(), LocalDateTime.now(), "product-main", lastProduct);
+                Image image = new Image(imgFile, lastProduct.getName(), ".jpg", lastProduct.getDescription(), "product-main", lastProduct);
                 imageRepository.save(image);
                 System.out.println("Saved product " + count + " : " + prd.getName());
                 count++;

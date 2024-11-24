@@ -51,12 +51,11 @@ public class Image {
         createdAt = LocalDateTime.now();
     }
 
-    public Image(String image, String name, String extension, String description, LocalDateTime createdAt, String data, Product product) {
+    public Image(String image, String name, String extension, String description, String data, Product product) {
         this.image = image;
         this.name = name;
         this.extension = extension;
         this.description = description;
-        this.createdAt = createdAt;
         this.data = data;
         this.product = product;
     }
