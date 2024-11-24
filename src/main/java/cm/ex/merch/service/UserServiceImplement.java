@@ -30,7 +30,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -178,7 +177,7 @@ public class UserServiceImplement implements UserService, UserDetailsService {
         if(user == null || !userAuth.getEmail().equalsIgnoreCase(user.getEmail())) return invalidBasicUserResponse;
 
         invalidBasicUserResponse = new BasicUserResponse(true,"This user is already banned", "update");
-        Ban bannedUser = banRepository.findByUserId(userId);
+        Ban bannedUser = banRepository.findBannedUserByUserId(userId);
         if(bannedUser != null) return invalidBasicUserResponse;
 
         Ban banUser = new Ban(reason,user);
