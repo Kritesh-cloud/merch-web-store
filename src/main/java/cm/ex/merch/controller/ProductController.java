@@ -28,24 +28,13 @@ public class ProductController {
 
     Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-//    @PostMapping("/add")
-//    public ResponseEntity<BasicProductResponse> addProduct(@RequestBody @Valid AddProductDto addProductDto) throws AccessDeniedException {
-//        logger.info("#[INFO] ProductController - add. AddProductDto : {}", addProductDto.toString());
-//        return ResponseEntity.ok(productService.addProduct(addProductDto));
-//    }
-
-//    @PreAuthorize("hasAnyAuthority('admin','editor','reader')")
     @PostMapping("/add")
     public ResponseEntity<BasicProductResponse> addProduct(@RequestPart("form") @Valid AddProductDto addProductDto, @RequestPart("img") MultipartFile... imageFiles) throws IOException {
-        logger.info("#[INFO] ProductController - add. AddProductDto : {}", addProductDto.toString());
-        logger.info("#[INFO] ProductController - add. imageFiles : {}", imageFiles.length);
         return new ResponseEntity<BasicProductResponse>(productService.addProductWithImage(addProductDto, imageFiles), HttpStatus.OK);
     }
 
     @PostMapping("/update")
     public ResponseEntity<BasicProductResponse> updateProduct(@RequestPart("form") @Valid UpdateProductDto updateProductDto, @RequestPart("img") MultipartFile... imageFiles) throws IOException {
-        logger.info("#[INFO] ProductController - add. UpdateProductDto : {}", updateProductDto.toString());
-        logger.info("#[INFO] ProductController - add. imageFiles : {}", imageFiles.length);
         return new ResponseEntity<BasicProductResponse>(productService.updateProductWithImages(updateProductDto, imageFiles), HttpStatus.OK);
     }
 
@@ -60,7 +49,6 @@ public class ProductController {
             @RequestParam(value = "pageSize", defaultValue="0") int pageSize
     ) {
         FilterProductDto filterProductDto = new FilterProductDto();
-        logger.info("#[INFO] ProductController - list. filterProductDto : {}", filterProductDto.toString());
         return ResponseEntity.ok(productService.listProductBySerial(filterProductDto));
     }
 

@@ -90,12 +90,12 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     }
 
     @Override
-    public UserInfoDto getUserById(String userId) throws AccessDeniedException {
+    public UserInfoDto getUserById() throws AccessDeniedException {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
 
         UserInfoDto invalidBasicUserInfoDto = new UserInfoDto(false,"User not found", null);
-        User user = userRepository.findUserByUserId(userId);
+        User user = userRepository.findUserByUserId(userAuth.getId());
 
         if(user == null || !userAuth.getEmail().equalsIgnoreCase(user.getEmail())) return invalidBasicUserInfoDto;
 
@@ -143,7 +143,7 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     }
 
     @Override
-    public BasicUserResponse UpdateUser(UpdateUserDto updateUserDto) throws AccessDeniedException {
+    public BasicUserResponse updateUser(UpdateUserDto updateUserDto) throws AccessDeniedException {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
 
@@ -165,7 +165,7 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     }
 
     @Override
-    public BasicUserResponse BanUserById(String userId, String reason) throws AccessDeniedException {
+    public BasicUserResponse banUserById(String userId, String reason) throws AccessDeniedException {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
 
@@ -187,11 +187,11 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     }
 
     @Override
-    public BasicUserResponse BanUsersByIds(List<String> userId, String reason){
+    public BasicUserResponse banUsersByIds(List<String> userId, String reason){
 
         userId.forEach(id -> {
             try {
-                BasicUserResponse basicUserResponse = BanUserById(id, reason);
+                BasicUserResponse basicUserResponse = banUserById(id, reason);
             } catch (AccessDeniedException e) {
                 throw new RuntimeException("ERROR: error while banning. "+e);
             }
@@ -201,12 +201,12 @@ public class UserServiceImplement implements UserService, UserDetailsService {
     }
 
     @Override
-    public BasicUserResponse deleteUserById(String userId) throws AccessDeniedException {
+    public BasicUserResponse deleteUserById() throws AccessDeniedException {
         UserAuth userAuth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         if (!userAuth.isAuthenticated()) throw new AccessDeniedException("Access denied. Not authenticated.");
 
         BasicUserResponse invalidBasicUserResponse = new BasicUserResponse(false,"User not found", "update");
-        User user = userRepository.findUserByUserId(userId);
+        User user = userRepository.findUserByUserId(userAuth.getId());
 
         if(user == null || !userAuth.getEmail().equalsIgnoreCase(user.getEmail())) return invalidBasicUserResponse;
 

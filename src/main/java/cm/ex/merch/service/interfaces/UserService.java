@@ -5,14 +5,11 @@ import cm.ex.merch.dto.request.authentication.SignUpUserDto;
 import cm.ex.merch.dto.request.user.UpdateUserDto;
 import cm.ex.merch.dto.response.user.UserInfoDto;
 import cm.ex.merch.dto.response.user.UserInfoListDto;
-import cm.ex.merch.entity.User;
-import cm.ex.merch.entity.user.Authority;
 import cm.ex.merch.dto.response.authentication.LoginResponse;
 import cm.ex.merch.dto.response.authentication.BasicUserResponse;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.UUID;
 
 public interface UserService {
 
@@ -21,15 +18,15 @@ public interface UserService {
 
     //READ
     public LoginResponse getUserToken(SignInUserDto signInUserDto);
-    public UserInfoDto getUserById(String userId) throws AccessDeniedException;
+    public UserInfoDto getUserById() throws AccessDeniedException;
     public UserInfoListDto listAllUsers() throws AccessDeniedException;
     public UserInfoListDto listAllUserByAuthority(String authority) throws AccessDeniedException;
 
     //UPDATE
-    public BasicUserResponse UpdateUser(UpdateUserDto updateUserDto) throws AccessDeniedException;
-    public BasicUserResponse BanUserById(String userId, String reason) throws AccessDeniedException;
-    public BasicUserResponse BanUsersByIds(List<String> userId, String reason);
+    public BasicUserResponse updateUser(UpdateUserDto updateUserDto) throws AccessDeniedException;
+    public BasicUserResponse banUserById(String userId, String reason) throws AccessDeniedException;
+    public BasicUserResponse banUsersByIds(List<String> userId, String reason);
 
     //DELETE
-    public BasicUserResponse deleteUserById(String userId) throws AccessDeniedException;
+    public BasicUserResponse deleteUserById() throws AccessDeniedException;
 }

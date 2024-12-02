@@ -27,11 +27,6 @@ public class AuthenticationController {
         return "Merch Test Controller";
     }
 
-    @GetMapping("/data")
-    public String data(){
-        return "Merch Data Controller";
-    }
-
     @PostMapping("/signUp")
     public ResponseEntity<BasicUserResponse> signUp(@RequestBody @Valid SignUpUserDto signUpUserDto) {
         logger.info("[INFO] Authentication.controller - register. SignUpUserDto : {}", signUpUserDto.toString());
@@ -45,11 +40,6 @@ public class AuthenticationController {
         LoginResponse loginResponse = userService.getUserToken(signInUserDto);
         logger.info("[[INFO]] Authentication.controller - register. loginResponse : {}",loginResponse.toString());
         return ResponseEntity.ok(loginResponse);
-    }
-
-    @GetMapping("/me")
-    public void getMe(){
-
     }
 
 }
